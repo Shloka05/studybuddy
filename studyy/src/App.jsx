@@ -6,7 +6,7 @@ import Register from './pages/Register';
 
 function App() {
   return (
-    <>
+    <div style={{ backgroundColor: '#222', minHeight: '100vh' }}>
       <Navbar />
       <Router>
         <Routes>
@@ -14,7 +14,7 @@ function App() {
           <Route path="/register" element={<Register />} />
         </Routes>
       </Router>
-    </>
+    </div>
   );
 }
 
