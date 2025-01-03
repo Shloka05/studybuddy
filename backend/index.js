@@ -3,9 +3,9 @@ const express = require('express')
 const app = express()
 const port = process.env.PORT || 3000
 const mongoose = require('mongoose');
-const mongoURI = process.env.MONGO_URI;
+const mongoURL = process.env.MONGO_URL;
 
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(mongoURL)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('Failed to connect to MongoDB', err));
 
