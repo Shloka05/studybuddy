@@ -1,19 +1,17 @@
-import { useState } from 'react'
-
-import './App.css'
-import Navbar from './components/Navbar'
+import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Quiz from './pages/Quizz';
 
 function App() {
-
   return (
     <>
-      <Navbar/>
-      hi
-      <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Quiz />} />
+      </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
