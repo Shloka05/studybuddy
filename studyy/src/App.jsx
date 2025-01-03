@@ -1,15 +1,19 @@
 import './App.css';
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Quiz from './pages/Quizz';
+import Register from './pages/Register';
 
 function App() {
   return (
     <>
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Quiz />} />
-      </Routes>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Quiz />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </Router>
     </>
   );
 }
