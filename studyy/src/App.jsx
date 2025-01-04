@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Quiz from './pages/Quizz';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import TeacherForm from './teacher/teacherForm';
 
 function App() {
   return (
@@ -14,6 +15,8 @@ function App() {
           <Route path="/" element={<Quiz />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/form" element={<TeacherForm/>} />
+          
         </Routes>
       </Router>
     </div>
