@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Button, Container, Col, Card } from 'react-bootstrap';
@@ -43,7 +43,7 @@ const Login = () => {
       >
         <Card
           className="mx-auto"
-          style={{ width: '40%', padding: '20px', backgroundColor: '#cccccc40', color: '#fff', 
+          style={{ width: '40%', padding: '20px', backgroundColor: '#cccccc0c', color: '#fff', 
             borderRadius: '20px', border: '1px solid #999'
            }}
         >
@@ -79,10 +79,7 @@ const Login = () => {
                 </Form.Control.Feedback>
               </FloatingLabel>
               <div className="d-flex justify-content-center mb-4">
-                <Button type="submit" className="m-3" style={{
-                  backgroundColor: '#090979',
-                }  
-                }>
+                <Button type="submit" className="m-3"  variant="primary">
                   Sign in
                 </Button>
               </div>
