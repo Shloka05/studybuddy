@@ -4,7 +4,9 @@ const app = express()
 const port = process.env.PORT || 3000
 const mongoose = require('mongoose');
 const mongoURL = process.env.MONGO_URL;
+const cors = require('cors');  // Importing CORS
 
+app.use(cors());
 mongoose.connect(`${mongoURL}`, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => {
   console.log('Connected to MongoDB!');
