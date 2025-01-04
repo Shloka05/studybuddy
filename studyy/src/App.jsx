@@ -1,11 +1,15 @@
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Quiz from './pages/Quizz';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import { useState } from 'react';
+import Admin from './admin/Admin';
 
 function App() {
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
   return (
     <div style={{ backgroundColor: '#222', minHeight: '100vh' }}>
       <Navbar />
@@ -13,7 +17,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Quiz />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={<Login onLogin={() => setIsAdminLoggedIn(true)} />}
+          />
+          <Route
+            path="/admin/*"
+            element={isAdminLoggedIn ? <Admin /> : <Navigate to="/login" />}
+          />
         </Routes>
       </Router>
     </div>
