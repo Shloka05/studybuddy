@@ -7,7 +7,7 @@ import axios from 'axios';
 const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
-    username: '',
+    uname: '',
     email: '',
     role: '',
     password: '',
@@ -34,8 +34,8 @@ const Register = () => {
       valid = false;
     }
 
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required.';
+    if (!formData.uname.trim()) {
+      newErrors.uname = 'Username is required.';
       valid = false;
     }
 
@@ -74,13 +74,17 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    e.preventDefault();
+    e.preventDefault();  // Call it only once to prevent default form submission
     if (validate()) {
       console.log('Form submitted successfully:', formData);
-      await axios.post(`${import.meta.env.BACKEND_URL}/api/users/register`, formData);
+      try {
+        await axios.post(`${import.meta.env.VITE_BACKEND}/api/users/register`, formData);
+      } catch (error) {
+        console.error('Error during registration:', error);
+      }
     }
   };
+  
 
   return (
     <Container fluid className="m-20">
@@ -105,15 +109,15 @@ const Register = () => {
                 </FloatingLabel>
               </Col>
               <Col md={6}>
-                <FloatingLabel controlId="username" label="Username" className="mb-3">
+                <FloatingLabel controlId="uname" label="Username" className="mb-3">
                   <Form.Control
                     type="text"
                     placeholder="Username"
-                    value={formData.username}
+                    value={formData.uname}
                     onChange={handleChange}
-                    isInvalid={!!errors.username}
+                    isInvalid={!!errors.uname}
                   />
-                  <Form.Control.Feedback type="invalid">{errors.username}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{errors.uname}</Form.Control.Feedback>
                 </FloatingLabel>
               </Col>
             </Row>
