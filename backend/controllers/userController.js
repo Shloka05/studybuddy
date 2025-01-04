@@ -18,10 +18,12 @@ const registerUser = async (req, res) => {
 
 // User login
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ 
+            $or: [{ uname: username }, { email: username }]  // This allows either username or email to be used for login
+          });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }

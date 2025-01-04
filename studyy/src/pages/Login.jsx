@@ -2,6 +2,7 @@ import { useState } from 'react';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Button, Container, Col, Card } from 'react-bootstrap';
+import axios from 'axios';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -12,7 +13,7 @@ const Login = () => {
     const newErrors = {};
     if (!username.trim()) {
       newErrors.username = 'Username or email address is required.';
-    } else if (!/\S+@\S+\.\S+/.test(username) && username.includes('@')) {
+    } else if (username.includes('@') && !/\S+@\S+\.\S+/.test(username)) {
       newErrors.username = 'Invalid email address format.';
     }
 
@@ -25,7 +26,7 @@ const Login = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -33,28 +34,27 @@ const Login = () => {
     } else {
       setErrors({});
       console.log('Login submitted with:', { username, password });
+      try {
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND}/api/users/login`, {
+          username, 
+          password
+        });
+        console.log(response.data);
+        console.log('Login successful:', response.data);
+      } catch (error) {
+        console.error('Error during login:', error.response ? error.response.data : error);
+      }
     }
   };
 
   return (
     <>
-      <Container
-        fluid className="m-20"
-      >
-        <Card
-          className="mx-auto"
-          style={{ width: '40%', padding: '20px', backgroundColor: '#cccccc0c', color: '#fff', 
-            borderRadius: '20px', border: '1px solid #999'
-           }}
-        >
+      <Container fluid className="m-20">
+        <Card className="mx-auto" style={{ width: '40%', padding: '20px', backgroundColor: '#cccccc0c', color: '#fff', borderRadius: '20px', border: '1px solid #999' }}>
           <h1 className="text-center mt-4">Login</h1>
           <Col className="m-auto" style={{ width: '80%', color: '#000' }}>
             <Form onSubmit={handleSubmit}>
-              <FloatingLabel
-                controlId="uname"
-                label="Username or Email address"
-                className="m-3"
-              >
+              <FloatingLabel controlId="uname" label="Username or Email address" className="m-3">
                 <Form.Control
                   type="text"
                   placeholder="Username"
@@ -79,7 +79,7 @@ const Login = () => {
                 </Form.Control.Feedback>
               </FloatingLabel>
               <div className="d-flex justify-content-center mb-4">
-                <Button type="submit" className="m-3"  variant="primary">
+                <Button type="submit" className="m-3" variant="primary">
                   Sign in
                 </Button>
               </div>
