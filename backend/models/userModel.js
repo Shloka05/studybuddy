@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   streak: { type: Number, default: 0 },
   tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
+  role: { type: String, required: true },
 });
 
 module.exports = mongoose.model('User', userSchema);
