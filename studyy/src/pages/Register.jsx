@@ -2,12 +2,14 @@ import { useState } from 'react';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Button, Container, Col, Row, Card } from 'react-bootstrap';
+import axios from 'axios';
 
 const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     username: '',
     email: '',
+    role: '',
     password: '',
     confirmPassword: ''
   });
@@ -17,6 +19,10 @@ const Register = () => {
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
+  };
+
+  const handleRoleChange = (e) => {
+    setFormData({ ...formData, role: e.target.value });
   };
 
   const validate = () => {
@@ -42,6 +48,11 @@ const Register = () => {
       valid = false;
     }
 
+    if (!formData.role) {
+      newErrors.role = 'Select user role.';
+      valid = false;
+    }    
+
     if (!formData.password) {
       newErrors.password = 'Password is required.';
       valid = false;
@@ -62,16 +73,19 @@ const Register = () => {
     return valid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     e.preventDefault();
     if (validate()) {
       console.log('Form submitted successfully:', formData);
+      await axios.post(`${import.meta.env.BACKEND_URL}/api/users/register`, formData);
     }
   };
 
   return (
     <Container fluid className="m-20">
-      <Card className="mx-auto shadow-sm" style={{ width: '40%', padding: '20px', backgroundColor: '#cccccc0c', color: '#fff', 
+      <Card className="mx-auto shadow-sm" 
+        style={{ width: '50%', padding: '20px', backgroundColor: '#cccccc0c', color: '#fff', 
         borderRadius: '20px', border: '1px solid #999'
        }}>
         <h1 className="text-center mb-4">Register</h1>
@@ -104,16 +118,30 @@ const Register = () => {
               </Col>
             </Row>
 
-            <FloatingLabel controlId="email" label="Email address" className="mb-3">
-              <Form.Control
-                type="email"
-                placeholder="name@example.com"
-                value={formData.email}
-                onChange={handleChange}
-                isInvalid={!!errors.email}
-              />
-              <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
-            </FloatingLabel>
+            <Row>
+              <Col md={6}>
+                <FloatingLabel controlId="email" label="Email address" className="mb-3">
+                  <Form.Control
+                    type="email"
+                    placeholder="name@example.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    isInvalid={!!errors.email}
+                  />
+                  <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
+                </FloatingLabel>
+              </Col>
+              <Col md={6}>
+                <FloatingLabel controlId="role" label="User Role" className="mb-3">
+                  <Form.Select value={formData.role} onChange={handleRoleChange} isInvalid={!!errors.role}>
+                    <option value="">Choose user role</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.role}</Form.Control.Feedback>
+                </FloatingLabel>
+              </Col>
+            </Row>
 
             <Row className="mb-3">
               <Col md={6}>
