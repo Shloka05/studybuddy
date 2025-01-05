@@ -5,8 +5,10 @@ import { Button, Container, Col, Card, Alert, Spinner } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEyeSlash, faEye } from '@fortawesome/free-regular-svg-icons';
 
-const Login = ({ onLogin }) => {
+const Login = ({ onAdminLogin, onStudentLogin, onTeacherLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -34,51 +36,50 @@ const Login = ({ onLogin }) => {
   };
 
   const handleSubmit = async (e) => {
-      e.preventDefault();
+    e.preventDefault();
 
-      // Validate input fields
-      const validationErrors = validate();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setApiError('');
+      return;
+    }
 
-      if (Object.keys(validationErrors).length > 0) {
-          setErrors(validationErrors);
-          setApiError('');
-          return;
+    setErrors({});
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND}/api/users/login`,
+        { username, password }
+      );
+
+      console.log('Login successful:', response.data);
+
+      const { role, token } = response.data;
+
+      localStorage.setItem('authToken', token);
+
+      if (role === 'admin') {
+        onAdminLogin();
+        navigate('/admin');
+      } else if (role === 'student') {
+        onStudentLogin();
+        navigate('/student');
+      } else if (role === 'teacher') {
+        onTeacherLogin();
+        navigate('/teacher');
+      } else {
+        setApiError('Invalid role. Please contact support.');
       }
-
-      // Clear previous errors and show a loading spinner
-      setErrors({});
-      setLoading(true);
-
-      try {
-          const response = await axios.post(
-              `${import.meta.env.VITE_BACKEND}/api/users/login`,
-              { username, password }
-          );
-
-          console.log('Login successful:', response.data);
-
-          const { role, token } = response.data;
-
-          // Store token in local storage for authenticated requests
-          localStorage.setItem('authToken', token);
-
-          if (role === 'admin') {
-            onLogin();
-            navigate('/admin');
-          } else if (role === 'student') {
-            navigate('/dashboard');
-          } else {
-            navigate('/login');
-          }
-      } catch (error) {
-          setApiError(
-            error.response?.data?.message || 'An error occurred. Please try again.'
-          );
-      } finally {
-        setLoading(false);
-      }
+    } catch (error) {
+      setApiError(
+        error.response?.data?.message || 'An error occurred. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
   };
-
 
   return (
     <Container fluid className="m-20">
@@ -96,12 +97,20 @@ const Login = ({ onLogin }) => {
         <h1 className="text-center mt-4">Login</h1>
         <Col className="m-auto" style={{ width: '80%', color: '#000' }}>
           <Form onSubmit={handleSubmit}>
-          {apiError && (
-            <Alert variant="danger" dismissible onClose={() => setApiError('')}>
-              {apiError}
-            </Alert>
-          )}
-            <FloatingLabel controlId="uname" label="Username or Email address" className="m-3">
+            {apiError && (
+              <Alert
+                variant="danger"
+                dismissible
+                onClose={() => setApiError('')}
+              >
+                {apiError}
+              </Alert>
+            )}
+            <FloatingLabel
+              controlId="uname"
+              label="Username or Email address"
+              className="m-3"
+            >
               <Form.Control
                 type="text"
                 placeholder="Username"
@@ -114,30 +123,40 @@ const Login = ({ onLogin }) => {
               </Form.Control.Feedback>
             </FloatingLabel>
             <div className="relative">
-                <FloatingLabel controlId="pw" label="Password" className="m-3">
+              <FloatingLabel controlId="pw" label="Password" className="m-3">
                 <Form.Control
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      isInvalid={!!errors.password}
-                  />
-                  <Button className="position-absolute top-7 end-0 translate-middle-y me-2"
-                      style={{ zIndex: 1 }}
-                      variant="outline-secondary"
-                      onClick={() => setShowPassword(!showPassword)}
-                  >
-                      {showPassword ? "Hide" : "Show"}
-                  </Button>
-                  <Form.Control.Feedback type="invalid">
-                    {errors.password}
-                  </Form.Control.Feedback>
-                </FloatingLabel>
-              </div>
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  isInvalid={!!errors.password}
+                />
+                <Button
+                  className="position-absolute top-7 end-0 translate-middle-y me-2"
+                  style={{ zIndex: 1 }}
+                  variant="light"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <FontAwesomeIcon icon={faEyeSlash} />
+                  ) : (
+                    <FontAwesomeIcon icon={faEye} />
+                  )}
+                </Button>
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </FloatingLabel>
+            </div>
             <div className="d-flex justify-content-center mb-4">
-            <Button type="submit" className="m-3" variant="primary" disabled={loading}>
-              {loading ? <Spinner animation="border" size="sm" /> : "Sign in"}
-            </Button>
+              <Button
+                type="submit"
+                className="m-3"
+                variant="primary"
+                disabled={loading}
+              >
+                {loading ? <Spinner animation="border" size="sm" /> : 'Sign in'}
+              </Button>
             </div>
           </Form>
         </Col>
@@ -147,7 +166,9 @@ const Login = ({ onLogin }) => {
 };
 
 Login.propTypes = {
-  onLogin: PropTypes.func.isRequired,
+  onAdminLogin: PropTypes.func.isRequired,
+  onStudentLogin: PropTypes.func.isRequired,
+  onTeacherLogin: PropTypes.func.isRequired,
 };
 
 export default Login;
