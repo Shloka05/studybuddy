@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const mongoose = require('mongoose');
 // Register a new user
 const registerUser = async (req, res) => {
     const { name, uname, email, password, role } = req.body;
@@ -53,8 +53,9 @@ const getAllUsers = async (req, res) => {
 
 // Get user by ID
 const getUserById = async (req, res) => {
+    console.log(mongoose.modelNames()); // Should include 'Task'
     try {
-        const user = await User.findById(req.params.id).populate('tasks');
+        const user = await User.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }

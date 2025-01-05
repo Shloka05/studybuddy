@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Quiz from './pages/Quizz';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import TeacherForm from './teacher/teacherForm';
 import { useState } from 'react';
 import Admin from './admin/Admin';
 
@@ -17,6 +18,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Quiz />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/form" element={<TeacherForm/>} />
+          
           <Route
             path="/login"
             element={<Login onLogin={() => setIsAdminLoggedIn(true)} />}
