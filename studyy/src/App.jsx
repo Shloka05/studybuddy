@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import TeacherForm from './teacher/teacherForm';
 import { useState, useEffect } from 'react';
 import Admin from './admin/Admin';
+import Community from './pages/Community';
 
 function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
@@ -27,6 +28,7 @@ function App() {
           <Route path="/" element={<Quiz />} />
           <Route path="/register" element={<Register />} />
           <Route path="/form/:id" element={<TeacherForm/>} />
+          <Route path="/community" element={<Community/>} />
           
           <Route
             path="/login"
@@ -36,6 +38,7 @@ function App() {
             path="/admin/*"
             element={isAdminLoggedIn ? <Admin /> : <Navigate to="/login" />}
           />
+
         </Routes>
       </Router>
     </div>
