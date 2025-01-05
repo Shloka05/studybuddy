@@ -2,7 +2,7 @@ import React from 'react'
 
 const Admin = () => {
   return (
-    <div>
+    <div style={{ color:'#ccc' }}>
       Admin
     </div>
   )
