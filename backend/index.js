@@ -7,7 +7,7 @@ const mongoURL = process.env.MONGO_URL;
 const cors = require('cors');  // Importing CORS
 
 app.use(cors());
-mongoose.connect(`${mongoURL}`, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(`${mongoURL}`)
 .then(() => {
   console.log('Connected to MongoDB!');
   
@@ -20,6 +20,9 @@ mongoose.connect(`${mongoURL}`, { useNewUrlParser: true, useUnifiedTopology: tru
 
   const userRoutes = require('./routes/userRoutes');
   app.use('/api/users', userRoutes);
+
+  // const teacherRoutes = require('./routes/teacherRoutes');
+  // app.use('/api', teacherRoutes);
 
   app.use((req, res, next) => {
     res.status(404).json({ message: 'Not Found' });
