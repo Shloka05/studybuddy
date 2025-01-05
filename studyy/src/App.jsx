@@ -5,11 +5,19 @@ import Quiz from './pages/Quizz';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import TeacherForm from './teacher/teacherForm';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Admin from './admin/Admin';
 
 function App() {
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
+    const savedStatus = localStorage.getItem('isAdminLoggedIn');
+    return savedStatus === 'true'; // Convert from string to boolean
+  });
+
+  // Save the login status to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('isAdminLoggedIn', isAdminLoggedIn.toString());
+  }, [isAdminLoggedIn]);
 
   return (
     <div style={{ backgroundColor: '#222', minHeight: '100vh' }}>

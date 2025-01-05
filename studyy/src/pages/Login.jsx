@@ -5,6 +5,8 @@ import { Button, Container, Col, Card, Alert, Spinner } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEyeSlash, faEye } from '@fortawesome/free-regular-svg-icons';
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -124,10 +126,10 @@ const Login = ({ onLogin }) => {
                   />
                   <Button className="position-absolute top-7 end-0 translate-middle-y me-2"
                       style={{ zIndex: 1 }}
-                      variant="outline-secondary"
+                      variant="light"
                       onClick={() => setShowPassword(!showPassword)}
                   >
-                      {showPassword ? "Hide" : "Show"}
+                      {showPassword ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}
                   </Button>
                   <Form.Control.Feedback type="invalid">
                     {errors.password}
