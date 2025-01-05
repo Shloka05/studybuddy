@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import TeacherForm from './teacher/teacherForm';
 import { useState } from 'react';
 import Admin from './admin/Admin';
+import Community from './pages/Community';
 
 function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -20,6 +21,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/form/:id" element={<TeacherForm/>} />
+          <Route path="/community" element={<Community/>} />
           
           <Route
             path="/login"
@@ -29,6 +31,7 @@ function App() {
             path="/admin/*"
             element={isAdminLoggedIn ? <Admin /> : <Navigate to="/login" />}
           />
+
         </Routes>
       </Router>
     </div>
