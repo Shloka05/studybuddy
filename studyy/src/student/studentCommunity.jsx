@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 
 const courses = [
@@ -7,7 +7,7 @@ const courses = [
   { id: 3, name: 'Physics 102', teacher: 'Mrs. Taylor', icon: 'fa fa-atom', groups: [{ name: 'Motion Group', messages: [] }, { name: 'Forces Group', messages: [] }] },
 ];
 
-function StudentPage() {
+function StudentCommunity() {
   const [selectedCourse, setSelectedCourse] = useState('');
   const [searchGroup, setSearchGroup] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('');
@@ -138,4 +138,4 @@ function StudentPage() {
   );
 }
 
-export default StudentPage;
+export default StudentCommunity;

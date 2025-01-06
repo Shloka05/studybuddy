@@ -38,8 +38,7 @@ const Navbar = () => {
 
   return (
     <>
-    <AppBar position="static"
-        sx={{ backgroundColor: '#191970' }} >
+    <AppBar position="static" sx={{ backgroundColor: '#191970' }} >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* Logo for Large Screens */}

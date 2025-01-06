@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
-import { Button, Container, Col, Row, Card } from 'react-bootstrap';
+import { Button, Container, Col, Row, Card, Spinner } from 'react-bootstrap';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Register = () => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     uname: '',
@@ -74,20 +76,24 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();  // Call it only once to prevent default form submission
+    e.preventDefault();
+    
     if (validate()) {
+      setLoading(true);
       console.log('Form submitted successfully:', formData);
       try {
         await axios.post(`${import.meta.env.VITE_BACKEND}/api/users/register`, formData);
       } catch (error) {
         console.error('Error during registration:', error);
+      } finally {
+        setLoading(false);
       }
     }
   };
   
 
   return (
-    <Container fluid className="m-20">
+    <Container fluid className="relative top-72 -translate-y-48">
       <Card className="mx-auto shadow-sm" 
         style={{ width: '50%', padding: '20px', backgroundColor: '#cccccc0c', color: '#fff', 
         borderRadius: '20px', border: '1px solid #999'
@@ -174,10 +180,21 @@ const Register = () => {
               </Col>
             </Row>
 
-            <div className="d-flex justify-content-center">
-              <Button variant="primary" type="submit">
-                Sign up
+            <div className="d-flex flex-column justify-content-center align-items-center text-center">
+              <Button
+                type="submit"
+                className="m-3"
+                variant="primary"
+                disabled={loading}
+              >
+                {loading ? <Spinner animation="border" size="sm" /> : 'Register'}
               </Button>
+              <p style={{ color: '#ccc' }}>
+                Already have an account?{' '}
+                <Link to="/login" className="text-primary">
+                  Login now
+                </Link>
+              </p>
             </div>
           </form>
         </Col>

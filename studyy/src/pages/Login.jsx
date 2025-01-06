@@ -3,7 +3,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Button, Container, Col, Card, Alert, Spinner } from 'react-bootstrap';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-regular-svg-icons';
@@ -82,7 +82,7 @@ const Login = ({ onAdminLogin, onStudentLogin, onTeacherLogin }) => {
   };
 
   return (
-    <Container fluid className="m-20">
+    <Container fluid className="relative top-80 -translate-y-52">
       <Card
         className="mx-auto"
         style={{
@@ -148,15 +148,21 @@ const Login = ({ onAdminLogin, onStudentLogin, onTeacherLogin }) => {
                 </Form.Control.Feedback>
               </FloatingLabel>
             </div>
-            <div className="d-flex justify-content-center mb-4">
+            <div className="d-flex flex-column justify-content-center align-items-center text-center">
               <Button
                 type="submit"
                 className="m-3"
                 variant="primary"
                 disabled={loading}
               >
-                {loading ? <Spinner animation="border" size="sm" /> : 'Sign in'}
+                {loading ? <Spinner animation="border" size="sm" /> : 'Login'}
               </Button>
+              <p style={{ color: '#ccc' }}>
+                Don&apos;t have an account?{' '}
+                <Link to="/register" className="text-primary">
+                  Register now
+                </Link>
+              </p>
             </div>
           </Form>
         </Col>
