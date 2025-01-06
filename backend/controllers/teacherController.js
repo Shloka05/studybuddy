@@ -38,7 +38,6 @@ const registerTeacher = (req, res) => {
         if (!req.files || !req.files.qualification || !req.files.image) {
             return res.status(400).json({ message: 'Both qualification and image files are required' });
         }
-        console.log(req.body);
         
         try {
             // Create a new teacher document with blob data
