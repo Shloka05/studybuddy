@@ -14,6 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Routes, Route } from 'react-router-dom';
+import TeacherForm from './teacherForm';
 
 const pages = ['Home', 'Community', 'Quiz', 'Notes'];
 const settings = ['Profile', 'Account', 'Logout'];
@@ -184,6 +185,7 @@ const Teacher = () => {
       </AppBar>
 
       <Routes>
+        <Route path="/" element={<TeacherForm />} />
       </Routes>
     </div>
   );

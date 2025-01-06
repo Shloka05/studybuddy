@@ -35,7 +35,7 @@ const loginUser = async (req, res) => {
         }
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.SECRET_KEY, { expiresIn: '1d' });
-        res.status(200).json({ message: 'Login successful', token, role: user.role });
+        res.status(200).json({ message: 'Login successful', token, role: user.role, id: user._id });
     } catch (err) {
         res.status(500).json({ message: 'Error logging in', error: err.message });
     }
@@ -55,7 +55,6 @@ const getAllUsers = async (req, res) => {
 
 // Get user by ID
 const getUserById = async (req, res) => {
-    console.log(mongoose.modelNames()); // Should include 'Task'
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
