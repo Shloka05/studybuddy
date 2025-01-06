@@ -186,8 +186,6 @@ const Teacher = () => {
       </AppBar>
 
       <Routes>
-        <Route path="/" element={<StudentDashboard />} />
-        <Route path="/community" element={<StudentCommunity />} />
       </Routes>
     </div>
   );
