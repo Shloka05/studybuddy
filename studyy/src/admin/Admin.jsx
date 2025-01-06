@@ -15,8 +15,9 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Routes, Route } from 'react-router-dom';
 import AdminDashboard from './adminDashboard';
+import TeacherList from './TeacherList';
 
-const pages = ['Home', 'Community', 'Quiz', 'Notes'];
+const pages = ['Home', 'Community', 'Teachers', 'Students'];
 const settings = ['Profile', 'Account', 'Logout'];
 
 const Admin = () => {
@@ -39,6 +40,14 @@ const Admin = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const pageRoutes = {
+    Home: '/',
+    Community: '/admin/community',
+    Teachers: '/admin/teachers',
+    Students: '/admin/students',
+  };
+  
 
   // Logout Function
   const logout = () => {
@@ -103,7 +112,7 @@ const Admin = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <MenuItem key={page} onClick={() => navigate(pageRoutes[page] || '/')}>
                     <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
                 ))}
@@ -136,7 +145,7 @@ const Admin = () => {
               {pages.map((page) => (
                 <Button
                   key={page}
-                  onClick={handleCloseNavMenu}
+                  onClick={() => navigate(pageRoutes[page] || '/')}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
                   {page}
@@ -186,6 +195,7 @@ const Admin = () => {
 
       <Routes>
         <Route path="/" element={<AdminDashboard />} />
+        <Route path="/teachers" element={<TeacherList />} />
       </Routes>
     </div>
   );

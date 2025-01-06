@@ -55,10 +55,10 @@ const Login = ({ onAdminLogin, onStudentLogin, onTeacherLogin }) => {
       );
 
       console.log('Login successful:', response.data);
-
-      const { role, token } = response.data;
+      const { id, role, token } = response.data;
 
       localStorage.setItem('authToken', token);
+      localStorage.setItem('id', id);
 
       if (role === 'admin') {
         onAdminLogin();

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+
 import { Form, Button, Container, Card, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 
 function TeacherForm() {
-  const { teachId } = useParams();
   const [formData, setFormData] = useState({
+    teachId : '',
     name: '',
     email: '',
     sex: '',
@@ -21,35 +21,39 @@ function TeacherForm() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Fetch teacher data if teachId is available
-    const fetchTeacherData = async () => {
+    const teachId = localStorage.getItem("id");
+  
+    const fetchMyInfo = async () => {
       try {
-        const resp = await axios.get(`${import.meta.env.VITE_BACKEND}/api/users/${teachId}`);
-        console.log(resp.data);
+        const authToken = localStorage.getItem("authToken");
+  
+        if (!authToken) {
+          throw new Error("No auth token found. Please log in.");
+        }
+  
+        const resp = await axios.get(
+          `${import.meta.env.VITE_BACKEND}/api/users/${teachId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+  
         setFormData({
-          ...formData,
-          name: resp.data.name,
-          email: resp.data.email,
-          sex: resp.data.sex,
-          age: resp.data.age,
-          qualification: resp.data.qualification,
-          subject: resp.data.subject,
-          pastExp: resp.data.pastExp,
-          image: resp.data.image
+          teachId: teachId || "",
+          name: resp.data.name || "",
+          email: resp.data.email || "",
         });
-
-        // Set previews for image and qualification if available
-        setImagePreview(resp.data.image);
-        setQualificationPreview(resp.data.qualification);
       } catch (err) {
-        console.error('Error fetching teacher data:', err);
+        console.error("Error fetching my info:", err);
       }
     };
-
+  
     if (teachId) {
-      fetchTeacherData();
+      fetchMyInfo();
     }
-  });
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -71,14 +75,35 @@ function TeacherForm() {
     e.preventDefault();
     try {
       const formDataToSubmit = new FormData();
+  
+      // Append all fields except files
       Object.keys(formData).forEach((key) => {
-        formDataToSubmit.append(key, formData[key]);
+        if (key !== 'image' && key !== 'qualification') {
+          formDataToSubmit.append(key, formData[key]);
+        }
       });
-
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND}/api/teachers`, formDataToSubmit, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-
+  
+      // Append files separately
+      if (formData.image) {
+        formDataToSubmit.append('image', formData.image);
+      }
+      if (formData.qualification) {
+        formDataToSubmit.append('qualification', formData.qualification);
+      }
+  
+      console.log('FormData content:');
+      for (const pair of formDataToSubmit.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+      }
+  
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND}/api/teachers/register`,
+        formDataToSubmit,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }
+      );
+  
       console.log('Teacher added successfully:', response.data);
       setError('');
     } catch (err) {
@@ -86,10 +111,10 @@ function TeacherForm() {
       setError('Failed to submit the form. Please check your inputs.');
     }
   };
-
+  
   return (
     <Container>
-      <Card className="mt-5 shadow-lg" style={{ backgroundColor: '#cccccc0c' }}>
+      <Card className="mt-5 shadow-lg" style={{ backgroundColor: '#cccccc0c', color: '#ccc' }}>
         <Card.Body>
           <h2 className="text-center text-primary mb-4">Teacher Registration</h2>
           <Form onSubmit={handleSubmit}>
@@ -100,10 +125,10 @@ function TeacherForm() {
                   <Form.Control
                     type="text"
                     name="name"
-                    value={formData.name}
-                    placeholder="Enter name"
+                    value={formData.email}
                     onChange={handleInputChange}
-                    required
+                    placeholder="Enter name"
+                    required readOnly
                   />
                 </Form.Group>
               </Col>
@@ -114,9 +139,9 @@ function TeacherForm() {
                     type="email"
                     name="email"
                     value={formData.email}
-                    placeholder="Enter email"
                     onChange={handleInputChange}
-                    required
+                    placeholder="Enter email"
+                    required readOnly
                   />
                 </Form.Group>
               </Col>
@@ -130,7 +155,7 @@ function TeacherForm() {
                     onChange={handleInputChange}
                     required
                   >
-                    <option value="">Select</option>
+                    <option value="">Select Gender</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
