@@ -1,10 +1,14 @@
 const Course = require('../models/courseModel')
 
 const registerCourse = async (req, res) => {
-    const { courseName, category } = req.body;
+    const { teacherCourseId, courseName, category } = req.body;
 
     try {
-        const course = new Course({courseName, category });
+        const course = new Course({teacherCourseId: teacherCourseId, courseName, category });
+        if(!teacherCourseId||!courseName||!category)
+        {
+            return res.status(400).json({message: "Please fill in all fields"})
+        }
         await course.save();
         res.status(201).json({ message: 'Course registered successfully', course });
     } catch (err) {

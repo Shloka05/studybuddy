@@ -84,7 +84,6 @@ const getTeacher = async (req,res) => {
     if (!teacher) {
       return res.status(404).json({ message: 'Teacher not found' });
     }
-    console.log(teacher);
     res.status(200).json(teacher);
         }catch(err){
             res.status(500).json({message: 'Error fetching teacher', error: err.message});
@@ -95,6 +94,10 @@ const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
+        if(updates.password)
+        {
+            updates.password = await bcrypt.hash(updates.password, 10);
+        }
         const user = await User.findByIdAndUpdate(id, updates, { new: true });
 
         if (!user) {

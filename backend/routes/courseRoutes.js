@@ -6,17 +6,17 @@ const {
 
 } = require('../controllers/courseController');
 
-
+const {isAuthenticated} = require('../controllers/authController');
 
 const router = express.Router();
 
 // User Registration
-router.post('/register', registerCourse);
+router.post('/register', isAuthenticated, registerCourse);
 
 //Update course
-router.put('/:id', updateCourse);
+router.put('/:id', isAuthenticated, updateCourse);
 
 //Delete course
-router.delete('/:id', deleteCourse);
+router.delete('/:id', isAuthenticated, deleteCourse);
 
 module.exports = router;
