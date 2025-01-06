@@ -16,6 +16,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { Routes, Route } from 'react-router-dom';
 import AdminDashboard from './adminDashboard';
 import TeacherList from './TeacherList';
+import TeacherDetails from './TeacherDetails';
 
 const pages = ['Home', 'Community', 'Teachers', 'Students'];
 const settings = ['Profile', 'Account', 'Logout'];
@@ -196,6 +197,7 @@ const Admin = () => {
       <Routes>
         <Route path="/" element={<AdminDashboard />} />
         <Route path="/teachers" element={<TeacherList />} />
+        <Route path="/teachers/form" element={<TeacherDetails />} />
       </Routes>
     </div>
   );

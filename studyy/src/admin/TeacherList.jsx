@@ -1,11 +1,29 @@
 import { useState, useEffect } from "react";
-import { Container, Table } from 'react-bootstrap'
+import { Container, Table, Button, Form, InputGroup } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const TeacherList = () => {
-  const [teachers, setTeachers] = useState(null);
+  const [teachers, setTeachers] = useState([]);
+  const [filteredTeachers, setFilteredTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState(null);
+  const navigate = useNavigate();
+
+  const getStatusLabel = (status) => {
+    const statusMap = {
+      0: "Pending",
+      1: "Rejected",
+      2: "Pending",
+      3: "Rejected",
+      4: "Pending",
+      5: "Rejected",
+      6: "Accepted",
+    };
+    return statusMap[status] || "Unknown";
+  };
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -16,22 +34,21 @@ const TeacherList = () => {
           throw new Error("No auth token found. Please log in.");
         }
 
-        const teacherName = await axios.get(`${import.meta.env.VITE_BACKEND}/api/users/`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        const teacherInfo = await axios.get(`${import.meta.env.VITE_BACKEND}/api/users/teachers`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
+        const teacherInfo = await axios.get(
+          `${import.meta.env.VITE_BACKEND}/api/users/teachers`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
 
         if (teacherInfo.data.length === 0) {
           throw new Error("No teacher data found");
         }
 
         setTeachers(teacherInfo.data);
+        setFilteredTeachers(teacherInfo.data);
       } catch (err) {
         console.error("Error fetching teacher data:", err.message);
         setError("Failed to fetch teacher data. Please try again later.");
@@ -39,9 +56,43 @@ const TeacherList = () => {
         setLoading(false);
       }
     };
-  
+
     fetchTeachers();
   }, []);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    const searchValue = e.target.value.toLowerCase();
+    setFilteredTeachers(
+      teachers.filter((teacher) =>
+        [teacher.teachId?.name, teacher.subject, getStatusLabel(teacher.formStatus)]
+          .map((value) => (value || "").toLowerCase())
+          .some((value) => value.includes(searchValue))
+      )
+    );
+  };
+
+  const handleSort = (key) => {
+    const sorted = [...filteredTeachers].sort((a, b) => {
+      const aValue = key === "status" ? getStatusLabel(a.formStatus) : a[key];
+      const bValue = key === "status" ? getStatusLabel(b.formStatus) : b[key];
+      return aValue > bValue ? 1 : -1;
+    });
+    setFilteredTeachers(sorted);
+    setSortBy(key);
+  };
+
+  const handleViewClick = (teacher) => {
+    if (teacher._id) {
+      navigate(`/admin/teachers/form`);
+    } else {
+      alert("Form ID is missing for this teacher.");
+    }
+  };
+
+  const pendingRequestsCount = teachers.filter((teacher) =>
+    [0, 2, 4].includes(teacher.formStatus)
+  ).length;
 
   if (loading) {
     return <div>Loading...</div>;
@@ -51,31 +102,60 @@ const TeacherList = () => {
     return <div>{error}</div>;
   }
 
-
   return (
     <Container className="my-6">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <InputGroup className="w-50">
+          <Form.Control
+            type="text"
+            placeholder="Search by name, subject, or status"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </InputGroup>
+        <span className="text-danger">
+          Pending Requests: {pendingRequestsCount}
+        </span>
+      </div>
+
       <Table variant="dark" striped bordered hover>
         <thead>
           <tr className="text-center">
             <th>Sr. No.</th>
-            <th>Teacher Name</th>
-            <th>Subject</th>
-            <th>Status</th>
+            <th onClick={() => handleSort("name")} style={{ cursor: "pointer" }}>
+              Teacher Name {sortBy === "name" && "🔽"}
+            </th>
+            <th onClick={() => handleSort("subject")} style={{ cursor: "pointer" }}>
+              Subject {sortBy === "subject" && "🔽"}
+            </th>
+            <th onClick={() => handleSort("status")} style={{ cursor: "pointer" }}>
+              Status {sortBy === "status" && "🔽"}
+            </th>
             <th>View</th>
           </tr>
         </thead>
         <tbody>
-          {teachers.map((teacher, index) => (
-            <tr key={index}>
-              <td>{index+1}.</td>
-              <td>{teacher.name}</td>
+          {filteredTeachers.map((teacher, index) => (
+            <tr key={index} className="text-center">
+              <td>{index + 1}.</td>
+              <td>{teacher.teachId?.name}</td>
               <td>{teacher.subject}</td>
+              <td>{getStatusLabel(teacher.formStatus)}</td>
+              <td>
+                <Button
+                  variant="info"
+                  size="sm"
+                  onClick={() => handleViewClick(teacher)}
+                >
+                  View
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>
       </Table>
     </Container>
-  )
-}
+  );
+};
 
-export default TeacherList
+export default TeacherList;
