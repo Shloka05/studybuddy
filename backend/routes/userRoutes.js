@@ -6,7 +6,8 @@ const {
     getUserById,
     updateUser,
     deleteUser,
-    getUsersByRole
+    getUsersByRole,
+    getTeacher
 } = require('../controllers/userController');
 
 const { isAuthenticated, isAdmin } = require('../controllers/authController');
@@ -21,6 +22,9 @@ router.post('/login', loginUser);
 
 // Get all users (Admin only)
 router.get('/', isAuthenticated, isAdmin, getAllUsers);
+
+//Get all teachers
+router.get('/teachers', isAuthenticated, isAdmin, getTeacher);
 
 // Get user by ID (Authenticated)
 router.get('/:id', isAuthenticated, getUserById);
