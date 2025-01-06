@@ -2,6 +2,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const Teacher = require('../models/teacherModel');
+const mongoose = require('mongoose');
 
 
 const storage = multer.memoryStorage();
@@ -26,21 +27,24 @@ const registerTeacher = (req, res) => {
             return res.status(400).json({ message: 'File upload error', error: err.message });
         }
 
-        // Destructure and validate body fields
-        const { sex, age, subject, pastExp } = req.body;
+        // Destructure and validate body fields, including teachId
+        const { teachId, sex, age, subject, pastExp, formStatus, remark} = req.body;
 
-        if (!sex || !age || !subject || !pastExp) {
+        if (!teachId || !sex || !age || !subject || !pastExp) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
-        console.log(req.files.qualification);
+
         // Check if both files are uploaded
         if (!req.files || !req.files.qualification || !req.files.image) {
             return res.status(400).json({ message: 'Both qualification and image files are required' });
         }
-
+        console.log(req.body);
+        
         try {
             // Create a new teacher document with blob data
+
             const teacher = new Teacher({
+                teachId: teachId,
                 sex,
                 age,
                 subject,
@@ -55,6 +59,8 @@ const registerTeacher = (req, res) => {
                     contentType: req.files.image[0].mimetype,
                     originalName: req.files.image[0].originalname,
                 },
+                formStatus: 0,
+                remark: "",
             });
 
             // Save the teacher document
@@ -65,9 +71,6 @@ const registerTeacher = (req, res) => {
         }
     });
 };
-
-
-
 
 module.exports = {
     registerTeacher,

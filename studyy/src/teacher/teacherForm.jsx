@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-
 import { Form, Button, Container, Card, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 
 function TeacherForm() {
   const [formData, setFormData] = useState({
-    teachId : '',
+    teachId: '',
     name: '',
     email: '',
     sex: '',
@@ -13,7 +12,9 @@ function TeacherForm() {
     qualification: '',
     subject: '',
     pastExp: '',
-    image: ''
+    image: '',
+    formStatus: 0,
+    remark: ''
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -22,15 +23,15 @@ function TeacherForm() {
 
   useEffect(() => {
     const teachId = localStorage.getItem("id");
-  
+
     const fetchMyInfo = async () => {
       try {
         const authToken = localStorage.getItem("authToken");
-  
+
         if (!authToken) {
           throw new Error("No auth token found. Please log in.");
         }
-  
+
         const resp = await axios.get(
           `${import.meta.env.VITE_BACKEND}/api/users/${teachId}`,
           {
@@ -39,9 +40,10 @@ function TeacherForm() {
             },
           }
         );
-  
+        console.log(resp.data)
+
         setFormData({
-          teachId: teachId || "",
+          teachId: resp.data._id || "",
           name: resp.data.name || "",
           email: resp.data.email || "",
         });
@@ -49,7 +51,7 @@ function TeacherForm() {
         console.error("Error fetching my info:", err);
       }
     };
-  
+
     if (teachId) {
       fetchMyInfo();
     }
@@ -75,14 +77,14 @@ function TeacherForm() {
     e.preventDefault();
     try {
       const formDataToSubmit = new FormData();
-  
+
       // Append all fields except files
       Object.keys(formData).forEach((key) => {
         if (key !== 'image' && key !== 'qualification') {
           formDataToSubmit.append(key, formData[key]);
         }
       });
-  
+
       // Append files separately
       if (formData.image) {
         formDataToSubmit.append('image', formData.image);
@@ -90,12 +92,12 @@ function TeacherForm() {
       if (formData.qualification) {
         formDataToSubmit.append('qualification', formData.qualification);
       }
-  
+
       console.log('FormData content:');
       for (const pair of formDataToSubmit.entries()) {
         console.log(`${pair[0]}: ${pair[1]}`);
       }
-  
+
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND}/api/teachers/register`,
         formDataToSubmit,
@@ -103,7 +105,7 @@ function TeacherForm() {
           headers: { 'Content-Type': 'multipart/form-data' },
         }
       );
-  
+
       console.log('Teacher added successfully:', response.data);
       setError('');
     } catch (err) {
@@ -111,7 +113,7 @@ function TeacherForm() {
       setError('Failed to submit the form. Please check your inputs.');
     }
   };
-  
+
   return (
     <Container>
       <Card className="mt-5 shadow-lg" style={{ backgroundColor: '#cccccc0c', color: '#ccc' }}>
@@ -125,10 +127,10 @@ function TeacherForm() {
                   <Form.Control
                     type="text"
                     name="name"
-                    value={formData.email}
+                    value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Enter name"
-                    required readOnly
+                    required
                   />
                 </Form.Group>
               </Col>
@@ -141,7 +143,7 @@ function TeacherForm() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="Enter email"
-                    required readOnly
+                    required
                   />
                 </Form.Group>
               </Col>

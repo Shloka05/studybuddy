@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+
 const Teacher = require('../models/teacherModel');
 // Register a new user
 const registerUser = async (req, res) => {
@@ -78,8 +79,13 @@ const getUsersByRole = async (req, res) => {
 };
 const getTeacher = async (req,res) => {
     try{
-        const teacher = await Teacher.find();
-        res.status(200).json(teacher);
+        const teacher = await Teacher.find().populate('teachId'); // Populate teachId
+        
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    console.log(teacher);
+    res.status(200).json(teacher);
         }catch(err){
             res.status(500).json({message: 'Error fetching teacher', error: err.message});
             }

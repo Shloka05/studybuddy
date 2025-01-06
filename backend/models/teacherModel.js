@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const teachSchema = new mongoose.Schema({
-  teachId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+ teachId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   sex: String,
     age: Number,
     subject: String,
