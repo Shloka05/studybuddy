@@ -3,11 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Quiz from './pages/Quizz';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import TeacherForm from './teacher/teacherForm';
 import { useState, useEffect } from 'react';
 import Admin from './admin/Admin';
 import Student from './student/Student';
-import Teacher from './teacher/Teacher';
 import FormStatus from './teacher/FormStatus';
 
 function App() {

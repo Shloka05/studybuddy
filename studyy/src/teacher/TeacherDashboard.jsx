@@ -1,10 +1,7 @@
-import Teacher from "./Teacher"
-
-
 const TeacherDashboard = () => {
   return (
     <div>
-      <Teacher />
+      TeacherDashboard
     </div>
   )
 }

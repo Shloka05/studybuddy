@@ -3,7 +3,7 @@ import axios from 'axios';
 import TeacherForm from './teacherForm';
 import { useNavigate } from 'react-router-dom';
 import { Button, Col, Container } from 'react-bootstrap';
-import TeacherDashboard from './TeacherDashboard';
+import Teacher from './Teacher';
 
 const FormStatus = () => {
   const [teacher, setTeacher] = useState(null);
@@ -62,8 +62,7 @@ const FormStatus = () => {
     const { formStatus } = teacher;
 
     if (formStatus === 6) {
-      <TeacherDashboard />
-      return null;
+      return <Teacher />;
     } else if ([0, 2, 4].includes(formStatus)) {
       // Awaiting admin approval
       return (

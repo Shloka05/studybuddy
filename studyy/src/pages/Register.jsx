@@ -83,6 +83,12 @@ const Register = () => {
       console.log('Form submitted successfully:', formData);
       try {
         await axios.post(`${import.meta.env.VITE_BACKEND}/api/users/register`, formData);
+
+        if(formData.role == 'student'){
+          window.location.href = '/student';
+        } else if(formData.role == 'teacher'){
+          window.location.href = '/teacher';
+        }
       } catch (error) {
         console.error('Error during registration:', error);
       } finally {
