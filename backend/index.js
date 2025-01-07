@@ -4,8 +4,7 @@ const app = express()
 const port = process.env.PORT || 3000
 const mongoose = require('mongoose');
 const mongoURL = process.env.MONGO_URL;
-const cors = require('cors');  // Importing CORS
-const path = require('path');
+const cors = require('cors');
 
 app.use(cors());
 mongoose.connect(`${mongoURL}`)
@@ -18,6 +17,9 @@ mongoose.connect(`${mongoURL}`)
 });
 
 app.use(express.json());
+
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/api/admin', adminRoutes);
 
 const userRoutes = require('./routes/userRoutes');
 app.use('/api/users', userRoutes);
