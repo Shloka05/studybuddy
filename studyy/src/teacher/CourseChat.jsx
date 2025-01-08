@@ -27,7 +27,7 @@ const [messages, setMessages] = useState([]); // Messages state
         console.error('Error fetching messages:', error.response?.data || error.message);
       }
     };
-
+    
     fetchMessages(); // Call the async function
   }, []);
 
