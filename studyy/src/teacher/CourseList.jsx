@@ -1,93 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+
 function CourseList() {
-  const [courseName, setCourseName] = useState('');
-  const [category, setCategory] = useState('');
   const [isTeacherLoggedIn, setIsTeacherLoggedIn] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [query, setQuery] = useState('');
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [courses, setCourses] = useState([]);
-  const [query, setQuery] = useState('');
-  const [filteredCourses, setFilteredCourses] = useState([]);
   const [courseData, setCourseData] = useState({
     courseName: '',
-    category: '', 
+    category: '',
     teacherCourseId: ''
   });
 
-  const handleInputChangeforCourse = (e) => {
-    const { name, value } = e.target;
-    setCourseData({ ...courseData, [name]: value });
-  };
-
+  // Handle search input changes
   const handleInputChange = (event) => {
     const input = event.target.value;
     setQuery(input);
-
-    // Filter courses based on query
     const filtered = courses.filter((course) =>
       course.courseName.toLowerCase().includes(input.toLowerCase())
     );
     setFilteredCourses(filtered);
   };
 
-  const handleSearch = () => {
-    // This is called when the Search button is clicked
-    const filtered = courses.filter((course) =>
-      course.courseName.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredCourses(filtered);
+  // Handle modal form input changes
+  const handleInputChangeforCourse = (e) => {
+    const { name, value } = e.target;
+    setCourseData({ ...courseData, [name]: value });
   };
 
+  // Handle course submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (courseData.courseName && courseData.category) {
+        const newCourse = { ...courseData };
+        setCourses([...courses, newCourse]);
+        setCourseData({ courseName: '', category: '', teacherCourseId: '' });
+        setShowModal(false);
+
+        const response = await axios.post(
+          `${import.meta.env.VITE_BACKEND}/api/teachers/courses/register`,
+          newCourse
+        );
+        console.log('Course added successfully:', response.data);
+      }
+    } catch (err) {
+      console.error('Error adding course:', err);
+    }
+  };
+  
   useEffect(() => {
     const savedStatus = localStorage.getItem('isTeacherLoggedIn');
-    if (savedStatus === 'true') {
-      setIsTeacherLoggedIn(true);
-    } else {
-      setIsTeacherLoggedIn(false);
-    }
+    setIsTeacherLoggedIn(savedStatus === 'true');
   }, []);
 
+  // Update filtered courses when the courses list changes
   useEffect(() => {
-    // Initially set filteredCourses to all courses
     setFilteredCourses(courses);
   }, [courses]);
-
-  const handleSubmit = async (e) => 
-    {
-        e.preventDefault();
-        try
-        {
-            if (courseData.courseName && courseData.category) {
-            const newCourse = { ...courseData };
-            setCourses([...courses, newCourse]);
-            setCourseData({
-                courseName: '',
-                category: '',
-                teacherCourseId: ''
-            });
-            setShowModal(false);
-            console.log('Course data: ', courseData)
-            const courseDataToSubmit = {
-                courseName: newCourse.courseName,
-                category: newCourse.category,
-                teacherCourseId: newCourse.teacherCourseId
-            };
-
-            const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND}/api/teachers/courses/register`,
-                courseDataToSubmit
-            );
-            console.log('Course added successfully:', response.data);
-            setError('');
-            } 
-        }
-        catch (err) {
-        console.error('Error adding teacher:', err.response || err);
-        setError('Failed to submit the form. Please check your inputs.');
-        }
-        
-  };
 
   const handleCourseClick = (course) => {
     setSelectedCourse(course);
@@ -98,40 +73,34 @@ function CourseList() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white d-flex">
+    <div className="min-h-screen d-flex">
       {/* Sidebar */}
-      <div className="w-1/4 bg-gray-800 p-6">
-        <h2 className="text-2xl mb-4">Dashboard</h2>
-        <div style={{ margin: '20px', textAlign: 'center' }}>
-          <div className="search-bar flex flex-wrap justify-center sm:justify-start my-4">
-            <input
-              type="text"
-              placeholder="Search for courses..."
-              value={query}
-              onChange={handleInputChange}
-              className="w-full sm:w-64 md:w-80 lg:w-96 px-4 py-2 text-lg text-black border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={handleSearch}
-              className="w-full sm:w-auto px-4 py-2 text-lg font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-r-lg sm:rounded-l-none transition-colors duration-200"
-            >
-              Search
-            </button>
-          </div>
-          <button
-            className="btn btn-primary w-100 mb-4"
-            onClick={() => setShowModal(true)}
-          >
-            Add Course
-          </button>
-        </div>
-
-        <h3 className="text-lg font-semibold mb-2">Your Courses</h3>
-        <ul className="list-group">
+      <div className="sidebar border-e-2 p-3" style={{ width: '25%' }}>
+        <Button
+          variant="success"
+          className="w-100 mb-3"
+          onClick={() => setShowModal(true)}
+        >
+          Add Course
+        </Button>
+        <InputGroup className="mb-3">
+          <Form.Control
+            type="text"
+            placeholder="Search for courses..."
+            value={query}
+            onChange={handleInputChange}
+          />
+          <Button variant="outline-secondary" onClick={() => setFilteredCourses(courses)}>
+            <FontAwesomeIcon icon={faMagnifyingGlass} />
+          </Button>
+        </InputGroup>
+        <h5>Your Community</h5>
+        <ul className="list-unstyled">
           {filteredCourses.map((course, index) => (
             <li
               key={index}
-              className="list-group-item bg-gray-700 text-black cursor-pointer"
+              className="p-2 border-bottom cursor-pointer"
+              style={{ cursor: 'pointer' }}
               onClick={() => handleCourseClick(course)}
             >
               {course.courseName} - {course.category}
@@ -139,81 +108,55 @@ function CourseList() {
           ))}
         </ul>
       </div>
-
-      {/* Main Content - Chat */}
-      <div className="flex-1 p-6 bg-gray-800">
+      <hr />
+      {/* Main Content */}
+      <div className="flex-grow-1 p-3">
         {selectedCourse ? (
           <div>
-            <h2 className="text-2xl mb-4">Chat for {selectedCourse.courseName}</h2>
-            <div className="bg-gray-700 p-4 rounded-lg shadow-lg">
-              <p className="text-sm text-gray-300">Chat with your course members here...</p>
+            <h2>Chat for {selectedCourse.courseName}</h2>
+            <div className="border p-3">
+              <p>Chat with your community members here...</p>
               {/* Add chat functionality here */}
             </div>
           </div>
         ) : (
-          <p className="text-lg text-center">Select a course to start chatting.</p>
+          <p>Select a community to start chatting.</p>
         )}
       </div>
 
-      {/* Modal for Adding Course */}
-      <div
-        className={`modal fade ${showModal ? 'show' : ''}`}
-        tabIndex="-1"
-        style={{ display: showModal ? 'block' : 'none' }}
-        aria-hidden={!showModal}
-      >
-        <div className="modal-dialog">
-          <div className="modal-content text-white" style={{ backgroundColor: '#3c3c3c' }}>
-            <div className="modal-header">
-              <h5 className="modal-title">Add New Course</h5>
-              <button
-                type="button"
-                className="btn-close text-black"
-                onClick={() => setShowModal(false)}
-                aria-label="Close"
+      {/* Add Course Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header style={{ backgroundColor:'#222', color:'#ccc' }} closeButton>
+          <Modal.Title>Add New Course</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ backgroundColor:'#222', color:'#ccc' }}>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Course Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="courseName"
+                value={courseData.courseName}
+                onChange={handleInputChangeforCourse}
+                required
               />
-            </div>
-            <div className="modal-body">
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label htmlFor="courseName" className="form-label">
-                    Course Name
-                  </label>
-                  <input
-                    id="courseName"
-                    type="text"
-                    name="courseName"
-                    value={courseData.courseName}
-                    onChange={handleInputChangeforCourse}
-                    className="form-control bg-gray-700 text-black"
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="category" className="form-label">
-                    Category
-                  </label>
-                  <input
-                    id="category"
-                    type="text"
-                    name="category"
-                    value={courseData.category}
-                    onChange={handleInputChangeforCourse}
-                    className="form-control bg-gray-700 text-black"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="btn btn-primary w-100"
-                >
-                  Add Course
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Category</Form.Label>
+              <Form.Control
+                type="text"
+                name="category"
+                value={courseData.category}
+                onChange={handleInputChangeforCourse}
+                required
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit" className="w-100">
+              Add Course
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

@@ -14,7 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Routes, Route } from 'react-router-dom';
-import AdminDashboard from './adminDashboard';
+import AdminDashboard from './AdminDashboard';
 import TeacherList from './TeacherList';
 import TeacherDetails from './TeacherDetails';
 
