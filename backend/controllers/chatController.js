@@ -51,7 +51,11 @@ const existingChat = async (req, res) => {
     const { chatId } = req.params;
     try {
         const chat = await Chat.findById(chatId);
-        const messages = await Message.find().populate('chatId');
+        const messages = await Message.find({chatId}, 'sender content createdAt')
+        // .populate('chatId')
+        .populate('sender', 'uname') // Populate sender with specific fields
+        .exec();
+      
         const latest = await Message.findById(chat.latestMessage);
         const sender = await User.findById(latest.sender);
         if (!chat) {

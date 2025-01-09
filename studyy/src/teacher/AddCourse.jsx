@@ -75,12 +75,15 @@ function AddCourse() {
                 teacherCourseId: newCourse.teacherCourseId
             };
 
+            
+            const authToken = localStorage.getItem("authToken");
+
             const response = await axios.post(
                 `${import.meta.env.VITE_BACKEND}/api/teachers/courses/register`,
                 courseDataToSubmit, 
                 {
                   headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NzkxNzE2YWUyZjIzMDc2ZjMzYmM1NCIsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzM2MzE2MTcyLCJleHAiOjE3MzY0MDI1NzJ9.1wc8FVLy6kcdikRjDqOGNklU0swb9ouLB8lAOEGIYpA',
+                    Authorization: `Bearer ${authToken}`,
                   },
                 }
             );

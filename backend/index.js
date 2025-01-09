@@ -7,29 +7,30 @@ const cors = require('cors');  // Importing CORS
 const path = require('path');
 
 const app = express();
-const server = http.createServer(app);  // Create an HTTP server with Express
-// const io = new Server(server, {
-//   pingTimeout: 60000,
-//   cors: {
-//     origin: "http://localhost:5173/",
-//     methods: ['GET', 'POST'],
-//   },
-// });         // Set up Socket.IO with the server
+const server = http.createServer(app); // Create an HTTP server with Express
+
 const port = process.env.PORT || 3000;
 const mongoURL = process.env.MONGO_URL;
 
+// Middleware for CORS
 app.use(cors({
-  origin: "http://localhost:5173", // This should be the frontend URL
+  origin: "http://localhost:5174", // Frontend URL without trailing slash
   methods: ["GET", "POST"], // Allow only GET and POST requests
 }));
 
+// Socket.IO configuration
 const io = new Server(server, {
+  pingTimeout: 60000, // Handles inactive clients
   cors: {
-    origin: "http://localhost:5173", // Allow socket.io connections from this origin
+    origin: "http://localhost:5174", // Allow socket.io connections from this origin
     methods: ["GET", "POST"],
   },
 });
-mongoose.connect(`${mongoURL}`)
+
+// MongoDB connection
+mongoose.connect(mongoURL, {
+
+})
   .then(() => {
     console.log('Connected to MongoDB!');
   })
@@ -52,12 +53,30 @@ app.use((req, res, next) => {
 
 // Socket.IO connection
 io.on("connection", (socket) => {
-  console.log("Connected to socket.io");
+  console.log(`User connected: ${socket.id}`);
 
-  // You can handle socket events here
-  // For example, a message event
-  socket.on('message', (data) => {
-    console.log('Message received: ', data);
+  // Example: Handle 'message' event from the client
+  socket.on('message', async (data) => {
+    console.log('Message received:', data);
+
+    try {
+      // Save message to MongoDB if needed
+      const { sender , content, chatId } = data;
+
+      const Message = require('./models/messageModel'); // Replace with actual path to your Message model
+      const newMessage = new Message({
+        sender: sender,
+        content,
+        chatId: chatId,
+      });
+
+      await newMessage.save();
+
+      // Emit the saved message back to all connected clients
+      // io.emit('message', newMessage);
+    } catch (error) {
+      console.error('Error saving message:', error);
+    }
   });
 
   socket.on('disconnect', () => {
@@ -65,7 +84,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// Start the server with both HTTP and WebSocket
+// Start the server
 server.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });

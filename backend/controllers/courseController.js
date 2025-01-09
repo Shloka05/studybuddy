@@ -2,7 +2,7 @@ const Course = require('../models/courseModel')
 const Chat = require('../models/chatModel')
 
 const registerCourse = async (req, res) => {
-    const {courseName, category, } = req.body;
+    const {courseName, category } = req.body;
 
     try {
         
@@ -13,18 +13,26 @@ const registerCourse = async (req, res) => {
         const course = new Course({teacherCourseId: req.user._id, courseName, category });
         await course.save();
 
-        res.status(201).json({ message: 'Course registered successfully', course });
+        // res.status(201).json({ message: 'Course registered successfully', course });
+
         const chat = new Chat({
             courseId: course._id,
             users: [req.user._id], // Add the teacher as the initial user in the chat
             latestMessage: null, // Initialize without a message
         });
         await chat.save();
+        
+        const updatedCourse = await Course.findByIdAndUpdate(
+            course._id,
+            { $set: { chatId: chat._id } },
+            { new: true } // Ensure the updated course is returned
+        );
 
+        // Respond with the created course and chat
         res.status(201).json({
             message: 'Course registered and chat created successfully',
-            course,
-            chat
+            course: updatedCourse,
+            chat,
         });
     } catch (err) {
         res.status(400).json({

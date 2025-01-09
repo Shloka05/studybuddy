@@ -26,9 +26,9 @@ router.put('/:courseId', isAuthenticated, validateCourse, updateCourse);
 
 router.post('/:courseId/chat', isAuthenticated, validateCourse, newChatStudent);
 
-router.post('/:courseId/:chatId', isAuthenticated, validateCourse, validateChat, sendMessage);
+router.post('/:chatId', isAuthenticated, validateChat, sendMessage);
 
-router.get('/:courseId/:chatId', isAuthenticated, validateCourse, validateChat, existingChat);
+router.get('/:chatId', isAuthenticated, validateChat, existingChat);
 
 
 module.exports = router;
