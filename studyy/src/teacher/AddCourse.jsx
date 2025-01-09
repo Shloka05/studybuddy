@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import CourseChat from './CourseChat';
 function AddCourse() {
   const [courseName, setCourseName] = useState('');
   const [category, setCategory] = useState('');
@@ -74,12 +75,19 @@ function AddCourse() {
                 teacherCourseId: newCourse.teacherCourseId
             };
 
+            
+            const authToken = localStorage.getItem("authToken");
+
             const response = await axios.post(
                 `${import.meta.env.VITE_BACKEND}/api/teachers/courses/register`,
-                courseDataToSubmit
+                courseDataToSubmit, 
+                {
+                  headers: {
+                    Authorization: `Bearer ${authToken}`,
+                  },
+                }
             );
             console.log('Course added successfully:', response.data);
-            setError('');
             } 
         }
         catch (err) {
@@ -102,6 +110,7 @@ function AddCourse() {
       {/* Sidebar */}
       <div className="w-1/4 bg-gray-800 p-6">
         <h2 className="text-2xl mb-4">Dashboard</h2>
+        
         <div style={{ margin: '20px', textAlign: 'center' }}>
           <div className="search-bar flex flex-wrap justify-center sm:justify-start my-4">
             <input
@@ -147,6 +156,7 @@ function AddCourse() {
             <h2 className="text-2xl mb-4">Chat for {selectedCourse.courseName}</h2>
             <div className="bg-gray-700 p-4 rounded-lg shadow-lg">
               <p className="text-sm text-gray-300">Chat with your course members here...</p>
+              <CourseChat/>
               {/* Add chat functionality here */}
             </div>
           </div>
