@@ -14,13 +14,13 @@ const TeacherList = () => {
 
   const getStatusLabel = (status) => {
     const statusMap = {
-      0: "Pending",
-      1: "Rejected",
-      2: "Pending",
-      3: "Rejected",
-      4: "Pending",
-      5: "Rejected",
-      6: "Accepted",
+      0: { label: "Pending", color: "warning" },
+      1: { label: "Rejected", color: "danger" },
+      2: { label: "Pending", color: "warning" },
+      3: { label: "Rejected", color: "danger" },
+      4: { label: "Pending", color: "warning" },
+      5: { label: "Rejected", color: "danger" },
+      6: { label: "Accepted", color: "success" },
     };
     return statusMap[status] || "Unknown";
   };
@@ -35,7 +35,7 @@ const TeacherList = () => {
         }
 
         const teacherInfo = await axios.get(
-          `${import.meta.env.VITE_BACKEND}/api/users/teachers`,
+          `${import.meta.env.VITE_BACKEND}/api/admin/teachers`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
@@ -84,7 +84,7 @@ const TeacherList = () => {
 
   const handleViewClick = (teacher) => {
     if (teacher._id) {
-      navigate(`/admin/teachers/form`);
+      navigate(`/admin/teachers/form/${teacher._id}`);
     } else {
       alert("Form ID is missing for this teacher.");
     }
@@ -105,6 +105,10 @@ const TeacherList = () => {
   return (
     <Container className="my-6">
       <div className="d-flex justify-content-between align-items-center mb-4">
+        <h6 className="d-flex justify-content-center align-items-center">
+          <h1 className="mb-0">Teacher List</h1>
+          <sup className="badge bg-warning ms-2">Pending Requests: {pendingRequestsCount}</sup>
+        </h6>
         <InputGroup className="w-50">
           <Form.Control
             type="text"
@@ -113,9 +117,6 @@ const TeacherList = () => {
             onChange={handleSearch}
           />
         </InputGroup>
-        <span className="text-danger">
-          Pending Requests: {pendingRequestsCount}
-        </span>
       </div>
 
       <Table variant="dark" striped bordered hover>
@@ -140,7 +141,7 @@ const TeacherList = () => {
               <td>{index + 1}.</td>
               <td>{teacher.teachId?.name}</td>
               <td>{teacher.subject}</td>
-              <td>{getStatusLabel(teacher.formStatus)}</td>
+              <td className={`text-${getStatusLabel(teacher.formStatus).color}`}>{getStatusLabel(teacher.formStatus).label}</td>
               <td>
                 <Button
                   variant="info"

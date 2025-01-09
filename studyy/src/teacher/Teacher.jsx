@@ -14,11 +14,11 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Routes, Route } from 'react-router-dom';
-import TeacherForm from './teacherForm';
-import AddCourse from './AddCourse';
+import CourseList from './CourseList';
+import TeacherDashboard from './TeacherDashboard';
 
-const pages = ['Home', 'Community', 'Quiz', 'Notes'];
-const settings = ['Profile', 'Account', 'Logout'];
+const pages = ['Home', 'Courses'];
+const settings = ['Profile', 'Logout'];
 
 const Teacher = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -39,6 +39,13 @@ const Teacher = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const pageRoutes = {
+    Home: '/teacher',
+    Courses: '/teacher/courses',
+    Community: '/teacher/community',
+    Students: '/teacher/students',
   };
 
   // Logout Function
@@ -104,7 +111,7 @@ const Teacher = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <MenuItem key={page} onClick={() => navigate(pageRoutes[page] || '/teacher')}>
                     <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
                 ))}
@@ -137,7 +144,7 @@ const Teacher = () => {
               {pages.map((page) => (
                 <Button
                   key={page}
-                  onClick={handleCloseNavMenu}
+                  onClick={() => navigate(pageRoutes[page] || '/teacher')}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
                   {page}
@@ -186,8 +193,8 @@ const Teacher = () => {
       </AppBar>
 
       <Routes>
-        <Route path="/" element={<TeacherForm />} />
-        <Route path="/course" element={<AddCourse/>} />
+        <Route path="/" element={<TeacherDashboard />} />
+        <Route path="/courses" element={<CourseList/>} />
       </Routes>
     </div>
   );

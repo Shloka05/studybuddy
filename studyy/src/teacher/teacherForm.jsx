@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, Button, Container, Card, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function TeacherForm() {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ function TeacherForm() {
   const [imagePreview, setImagePreview] = useState(null);
   const [qualificationPreview, setQualificationPreview] = useState(null);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const teachId = localStorage.getItem("id");
@@ -40,7 +42,6 @@ function TeacherForm() {
             },
           }
         );
-        console.log(resp.data)
 
         setFormData({
           teachId: resp.data._id || "",
@@ -114,9 +115,19 @@ function TeacherForm() {
     }
   };
 
+  // Logout Function
+  const logout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.setItem('isTeacherLoggedIn', 'false');
+    navigate('/login'); // Redirect to login page
+  };
+
   return (
-    <Container>
-      <Card className="mt-5 shadow-lg" style={{ backgroundColor: '#cccccc0c', color: '#ccc' }}>
+    <Container fluid className="relative top-80 -translate-y-52">
+      <Col className='relative end-0 pb-5'>
+        <Button onClick={logout}>Logout</Button>
+      </Col>
+      <Card className="shadow-lg" style={{ backgroundColor: '#cccccc0c', color: '#ccc' }}>
         <Card.Body>
           <h2 className="text-center text-primary mb-4">Teacher Registration</h2>
           <Form onSubmit={handleSubmit}>
