@@ -14,7 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Routes, Route } from 'react-router-dom';
-import AdminDashboard from './adminDashboard';
+import AdminDashboard from './AdminDashboard';
 import TeacherList from './TeacherList';
 import TeacherDetails from './TeacherDetails';
 
@@ -43,7 +43,7 @@ const Admin = () => {
   };
 
   const pageRoutes = {
-    Home: '/',
+    Home: '/admin',
     Community: '/admin/community',
     Teachers: '/admin/teachers',
     Students: '/admin/students',
@@ -113,7 +113,7 @@ const Admin = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={() => navigate(pageRoutes[page] || '/')}>
+                  <MenuItem key={page} onClick={() => navigate(pageRoutes[page] || '/admin')}>
                     <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
                 ))}
@@ -146,7 +146,7 @@ const Admin = () => {
               {pages.map((page) => (
                 <Button
                   key={page}
-                  onClick={() => navigate(pageRoutes[page] || '/')}
+                  onClick={() => navigate(pageRoutes[page] || '/admin')}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
                   {page}
@@ -197,7 +197,7 @@ const Admin = () => {
       <Routes>
         <Route path="/" element={<AdminDashboard />} />
         <Route path="/teachers" element={<TeacherList />} />
-        <Route path="/teachers/form" element={<TeacherDetails />} />
+        <Route path="/teachers/form/:teacherId" element={<TeacherDetails />} />
       </Routes>
     </div>
   );

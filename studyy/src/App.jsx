@@ -3,11 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Quiz from './pages/Quizz';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import TeacherForm from './teacher/teacherForm';
 import { useState, useEffect } from 'react';
 import Admin from './admin/Admin';
 import Student from './student/Student';
-import Teacher from './teacher/Teacher';
+import FormStatus from './teacher/FormStatus';
 
 function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
@@ -39,12 +38,11 @@ function App() {
   }, [isTeacherLoggedIn]);
 
   return (
-    <div style={{ backgroundColor: '#222', height: '100vh' }}>
+    <div style={{ backgroundColor: '#222', minHeight: '100vh' }}>
       <Router>
         <Routes>
           <Route path="/" element={<Quiz />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/form/:id" element={<TeacherForm />} />
           
           <Route
             path="/login"
@@ -69,7 +67,7 @@ function App() {
           <Route
             path="/teacher/*"
             element={
-              isTeacherLoggedIn ? <Teacher /> : <Navigate to="/login" />
+              isTeacherLoggedIn ? <FormStatus /> : <Navigate to="/login" />
             }
           />
         </Routes>

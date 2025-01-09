@@ -1,7 +1,7 @@
 const express = require('express');
 const {
     registerTeacher,
-
+    getTeacherForms,
 } = require('../controllers/teacherController');
 const {
     registerCourse,
@@ -17,7 +17,7 @@ const { isAuthenticated, isAdmin } = require('../controllers/authController');
 
 const router = express.Router();
 
-// User Registration
+// Teacher Registration Form
 router.post('/register', registerTeacher);
 
 router.post('/courses/register', isAuthenticated, registerCourse);
@@ -30,5 +30,10 @@ router.post('/:chatId', isAuthenticated, validateChat, sendMessage);
 
 router.get('/:chatId', isAuthenticated, validateChat, existingChat);
 
+// Get all teacher forms
+router.get('/forms',isAuthenticated, getTeacherForms);
+
+// Course Addition
+router.post('/courses/register', registerCourse);
 
 module.exports = router;

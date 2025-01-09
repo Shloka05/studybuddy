@@ -1,9 +1,9 @@
-const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
 
+const User = require('../models/userModel');
 const Teacher = require('../models/teacherModel');
+
 // Register a new user
 const registerUser = async (req, res) => {
     const { name, uname, email, password, role } = req.body;
@@ -42,18 +42,6 @@ const loginUser = async (req, res) => {
     }
 };
 
-// Get all users (Admin only)
-const getAllUsers = async (req, res) => {
-    try {
-        const users = await User.find();
-        // const users = await Teacher.find();
-        res.status(200).json(users);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching users', error: err.message });
-    }
-
-};
-
 // Get user by ID
 const getUserById = async (req, res) => {
     try {
@@ -67,28 +55,6 @@ const getUserById = async (req, res) => {
     }
 };
 
-// Get users by role (Admin only)
-const getUsersByRole = async (req, res) => {
-    try {
-        const role = req.params.role;
-        const users = await User.find({ role });
-        res.status(200).json(users);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching users by role', error: err.message });
-    }
-};
-const getTeacher = async (req,res) => {
-    try{
-        const teacher = await Teacher.find().populate('teachId'); // Populate teachId
-        
-    if (!teacher) {
-      return res.status(404).json({ message: 'Teacher not found' });
-    }
-    res.status(200).json(teacher);
-        }catch(err){
-            res.status(500).json({message: 'Error fetching teacher', error: err.message});
-            }
-    };
 // Update user details
 const updateUser = async (req, res) => {
     try {
@@ -109,7 +75,7 @@ const updateUser = async (req, res) => {
     }
 };
 
-// Delete user (Admin only)
+// Delete user
 const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -127,10 +93,7 @@ const deleteUser = async (req, res) => {
 module.exports = {
     registerUser,
     loginUser,
-    getAllUsers,
     getUserById,
-    getUsersByRole,
     updateUser,
     deleteUser,
-    getTeacher,
 };
