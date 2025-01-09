@@ -18,10 +18,11 @@ const validateChat = async (req, res, next) => {
       req.chat = chat;
   
       // Proceed to the next middleware or route handler
+      
       next();
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(500).json({ message: 'Internal server ' });
     }
   };
 
@@ -61,10 +62,10 @@ const existingChat = async (req, res) => {
         if (!chat) {
             return res.status(404).json({ message: 'Chat not found' });
             }
-            res.status(200).json({ message: 'Chat found', chat, messages, latest, sender });
+            res.status(200).json({ message: 'Chat found', chat, messages, latest, sender});
 
             } catch (err) {
-                res.status(500).json({ message: 'Error finding chat', error: err.message });
+                res.status(500).json({ message: 'Error finding chat why?', error: err.message });
                 }
 }
 

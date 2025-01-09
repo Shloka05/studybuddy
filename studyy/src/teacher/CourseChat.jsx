@@ -4,19 +4,20 @@ import io from 'socket.io-client';
 import axios from 'axios';
 
 const ENDPOINT = "http://localhost:5000"; // Server endpoint
-let socket;
 
-function CourseChat() {
+function CourseChat({ chatId }) {
   const [messages, setMessages] = useState([]); // Messages state
   const [input, setInput] = useState(''); // Input state
+  const [socketInstance, setSocketInstance] = useState(null); // Track socket instance
 
   useEffect(() => {
-    // Fetch messages on component mount
+    // Fetch messages whenever chatId changes
     const fetchMessages = async () => {
       try {
         const authToken = localStorage.getItem("authToken");
+        console.log(`Fetching messages for chatId: ${chatId}`);
         const response = await axios.get(
-          `${ENDPOINT}/api/teachers/677f9b2cf483e600a21e87d4`, // Replace with actual chatId
+          `${ENDPOINT}/api/teachers/${chatId}`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
@@ -30,41 +31,48 @@ function CourseChat() {
       }
     };
 
-    fetchMessages();
-  }, []);
+    if (chatId) {
+      fetchMessages();
+    }
+  }, [chatId]);
 
   useEffect(() => {
-    // Initialize socket connection
-    socket = io(ENDPOINT, {
+    // Initialize or reinitialize socket connection when chatId changes
+    if (socketInstance) {
+      socketInstance.disconnect(); // Clean up existing socket connection
+    }
+
+    const socket = io(ENDPOINT, {
       transports: ['websocket', 'polling'],
     });
+    setSocketInstance(socket);
 
-    // Listen for new messages
+    // Listen for new messages in the context of the current chatId
+    socket.emit('joinChat', chatId); // Inform the server about joining a chat
     socket.on('message', (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
-    // Cleanup socket connection on unmount
     return () => {
-      socket.disconnect();
+      socket.disconnect(); // Cleanup socket connection on component unmount
     };
-  }, []);
+  }, [chatId]);
 
   const handleSend = () => {
     const senderId = localStorage.getItem('id');
     if (input.trim()) {
       const message = {
-        sender: { _id: senderId, uname: 'You' }, // Use actual user data
+        sender: { _id: senderId, uname: 'You' },
         content: input,
-        chatId: '677f9b2cf483e600a21e87d4', // Replace with actual chatId
+        chatId,
       };
 
       // Emit message via socket
-      socket.emit('message', message);
-      
+      socketInstance?.emit('message', message);
+
       // Add message locally for instant display
       setMessages((prevMessages) => [...prevMessages, message]);
-      
+
       setInput(''); // Clear input field
     }
   };
@@ -77,8 +85,7 @@ function CourseChat() {
   };
 
   return (
-    <div className="container mt-4" style={{ maxWidth: '500px' }}>
-      <h2 className="text-center text-light mb-4">Course Chat</h2>
+    <div className="container mt-4" style={{ maxWidth: '100%' }}>
       <div
         className="border rounded p-3 mb-3 flex flex-col"
         style={{

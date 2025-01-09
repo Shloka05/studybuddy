@@ -6,7 +6,8 @@ const {
 const {
     registerCourse,
     validateCourse,
-    updateCourse
+    updateCourse, 
+    getCourses
 } = require('../controllers/courseController');
 
 const {sendMessage} = require('../controllers/messageController');
@@ -20,20 +21,24 @@ const router = express.Router();
 // Teacher Registration Form
 router.post('/register', registerTeacher);
 
+// Get all teacher forms
+router.get('/forms',isAuthenticated, getTeacherForms);
+
+
+
+
 router.post('/courses/register', isAuthenticated, registerCourse);
 
+router.get('/:teachId/courses', isAuthenticated, getCourses);
+
 router.put('/:courseId', isAuthenticated, validateCourse, updateCourse);
+
+
 
 router.post('/:courseId/chat', isAuthenticated, validateCourse, newChatStudent);
 
 router.post('/:chatId', isAuthenticated, validateChat, sendMessage);
 
 router.get('/:chatId', isAuthenticated, validateChat, existingChat);
-
-// Get all teacher forms
-router.get('/forms',isAuthenticated, getTeacherForms);
-
-// Course Addition
-router.post('/courses/register', registerCourse);
 
 module.exports = router;

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CourseChat from './CourseChat';
+import { Modal, Button, Form, InputGroup } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+
 function AddCourse() {
   const [courseName, setCourseName] = useState('');
   const [category, setCategory] = useState('');
@@ -32,13 +36,7 @@ function AddCourse() {
     setFilteredCourses(filtered);
   };
 
-  const handleSearch = () => {
-    // This is called when the Search button is clicked
-    const filtered = courses.filter((course) =>
-      course.courseName.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredCourses(filtered);
-  };
+
 
   useEffect(() => {
     const savedStatus = localStorage.getItem('isTeacherLoggedIn');
@@ -48,6 +46,30 @@ function AddCourse() {
       setIsTeacherLoggedIn(false);
     }
   }, []);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const teachId = localStorage.getItem("id");
+        const authToken = localStorage.getItem("authToken");
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND}/api/teachers/${teachId}/courses`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+        console.log(response.data);
+        setCourses(response.data.course); // Set initial messages
+      } catch (error) {
+        console.error('Error fetching courses:', error.response?.data || error.message);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
 
   useEffect(() => {
     // Initially set filteredCourses to all courses
@@ -98,6 +120,7 @@ function AddCourse() {
   };
 
   const handleCourseClick = (course) => {
+    console.log(course.chatId);
     setSelectedCourse(course);
   };
 
@@ -106,41 +129,34 @@ function AddCourse() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white d-flex">
+    <div className="min-h-screen text-white d-flex">
       {/* Sidebar */}
-      <div className="w-1/4 bg-gray-800 p-6">
-        <h2 className="text-2xl mb-4">Dashboard</h2>
-        
-        <div style={{ margin: '20px', textAlign: 'center' }}>
-          <div className="search-bar flex flex-wrap justify-center sm:justify-start my-4">
-            <input
-              type="text"
-              placeholder="Search for courses..."
-              value={query}
-              onChange={handleInputChange}
-              className="w-full sm:w-64 md:w-80 lg:w-96 px-4 py-2 text-lg text-black border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={handleSearch}
-              className="w-full sm:w-auto px-4 py-2 text-lg font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-r-lg sm:rounded-l-none transition-colors duration-200"
-            >
-              Search
-            </button>
-          </div>
-          <button
-            className="btn btn-primary w-100 mb-4"
-            onClick={() => setShowModal(true)}
-          >
-            Add Course
-          </button>
-        </div>
-
-        <h3 className="text-lg font-semibold mb-2">Your Courses</h3>
-        <ul className="list-group">
+      <div className="sidebar border-e-2 p-3" style={{ width: '30%' }}>
+        <Button
+          variant="success"
+          className="w-100 mb-3"
+          onClick={() => setShowModal(true)}
+        >
+          Add Course
+        </Button>
+        <InputGroup className="mb-3">
+          <Form.Control
+            type="text"
+            placeholder="Search for courses..."
+            value={query}
+            onChange={handleInputChange}
+          />
+          <Button variant="primary" onClick={() => setFilteredCourses(courses)}>
+            <FontAwesomeIcon icon={faMagnifyingGlass} />
+          </Button>
+        </InputGroup>
+        <h5>Your Community</h5>
+        <ul className="list-unstyled">
           {filteredCourses.map((course, index) => (
             <li
               key={index}
-              className="list-group-item bg-gray-700 text-black cursor-pointer"
+              className="p-2 border-bottom cursor-pointer"
+              style={{ cursor: 'pointer' }}
               onClick={() => handleCourseClick(course)}
             >
               {course.courseName} - {course.category}
@@ -150,13 +166,12 @@ function AddCourse() {
       </div>
 
       {/* Main Content - Chat */}
-      <div className="flex-1 p-6 bg-gray-800">
+      <div className="flex-1 p-6">
         {selectedCourse ? (
           <div>
-            <h2 className="text-2xl mb-4">Chat for {selectedCourse.courseName}</h2>
-            <div className="bg-gray-700 p-4 rounded-lg shadow-lg">
-              <p className="text-sm text-gray-300">Chat with your course members here...</p>
-              <CourseChat/>
+            <div className="bg-dark p-4 rounded-lg shadow-lg">
+              <h2 className="text-2xl mb-4">Chat for {selectedCourse.courseName}</h2>
+              <CourseChat chatId={selectedCourse.chatId}/>
               {/* Add chat functionality here */}
             </div>
           </div>

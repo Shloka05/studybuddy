@@ -14,7 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Routes, Route } from 'react-router-dom';
-import CourseList from './CourseList';
+import AddCourse from './AddCourse';
 import TeacherDashboard from './TeacherDashboard';
 
 const pages = ['Home', 'Courses'];
@@ -194,7 +194,7 @@ const Teacher = () => {
 
       <Routes>
         <Route path="/" element={<TeacherDashboard />} />
-        <Route path="/courses" element={<CourseList/>} />
+        <Route path="/courses" element={<AddCourse />} />
       </Routes>
     </div>
   );
